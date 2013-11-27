@@ -35,12 +35,12 @@ public class Thumbnail extends JComponent {
 	private Photo photo;
 
 	// the loaded, displayable thumbnail image
-	private BufferedImage bufferedImage;
+	public BufferedImage bufferedImage;
 
 	// width & height in pixels of the thumbnail image (not the
 	// original photo!)
-	private int width;
-	private int height;
+	public int width;
+	public int height;
 
 	// true iff this thumbnail is selected
 	private boolean isSelected;
@@ -50,7 +50,6 @@ public class Thumbnail extends JComponent {
 	 */
 	public Thumbnail(Photo p) {
 		photo = p;
-
 		ImageIcon icon = new ImageIcon(p.getFile().getAbsolutePath());
 		int w = icon.getIconWidth();
 		int h = icon.getIconHeight();
@@ -65,7 +64,6 @@ public class Thumbnail extends JComponent {
 			height = THUMBNAIL_SIZE;
 			width = THUMBNAIL_SIZE * w / h;
 		}
-
 		bufferedImage = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_RGB);
 		Graphics2D imageGraphic = bufferedImage.createGraphics();
@@ -137,8 +135,8 @@ public class Thumbnail extends JComponent {
 		g2.translate(d.width / 2, d.height / 2);
 
 		// draw the image at (-w/2, -h/2) relative to the center point
-		int x = -width / 2;
-		int y = -height / 2;
+		int x = 0;
+		int y = 0;
 		g2.drawImage(bufferedImage, x, y, this);
 
 		// draw selection highlight over the image

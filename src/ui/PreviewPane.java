@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,16 +31,16 @@ public class PreviewPane extends JScrollPane {
 	private JPanel content;
 
 	// list of thumbnails and photos currently displayed
-	private List<Thumbnail> thumbnails;
+	private List<ThumbnailProxy> thumbnails;
 	private Set<Photo> currentPhotos;
-	
+		
 
 	/**
 	 * Make a PreviewPane.
 	 */
 	public PreviewPane() {
 		content = new ScrollableFlowPanel();
-		thumbnails = new ArrayList<Thumbnail>();
+		thumbnails = new ArrayList<ThumbnailProxy>();
 		setViewportView(content);
 	}
 
@@ -66,10 +67,11 @@ public class PreviewPane extends JScrollPane {
 		currentPhotos = photos;
 
 		for (Photo p : photos) {
-			Thumbnail t = new Thumbnail(p);
+			ThumbnailProxy t = new ThumbnailProxy(p);
 			content.add(t);
 			thumbnails.add(t);
 		}
+		(new ThumbnailThread()).start();
 
 		// force the scroll pane to lay out again
 		content.invalidate();
@@ -92,12 +94,24 @@ public class PreviewPane extends JScrollPane {
 	 */
 	public Set<Photo> getSelectedPhotos() {
 		Set<Photo> result = new HashSet<Photo>();
-		for (Thumbnail t : thumbnails) {
+		for (ThumbnailProxy t : thumbnails) {
 			if (t.isSelected()) { // if selected
 				result.add(t.getPhoto()); // add to the list of returned ones
 			}
 		}
 		return result;
+	}
+	
+	public class ThumbnailThread extends Thread {
+
+	    public void run() {
+	    	try {
+		        for (ThumbnailProxy tp: thumbnails) {
+		        	tp.loadRealThumbnail();
+		        }
+	    	} catch (ConcurrentModificationException ex) {}
+	    }
+
 	}
 
 	/**
