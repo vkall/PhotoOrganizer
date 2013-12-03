@@ -2,6 +2,9 @@ package logic;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.EmptyStackException;
@@ -313,9 +316,42 @@ public class PhotoOrganizerController {
 	            	break;
 	            case FOLDER_EXPORT:
 	            	System.out.println("Export as folders and files");
+	            	try {
+		            	String folder = "Exported";
+		            	String path;
+		            	File root = new File(folder);
+	    				if (root.exists()) {
+	    					deleteFolder(root);
+	    				}
+		            	root.mkdir();
+		            	while (iterator.hasNext()) {
+		    				Album a = (Album)iterator.next();
+		    				path = root.getAbsolutePath() + System.getProperty("file.separator") + a;
+		    				// Create folder for each album
+		    				File dir = new File(path);
+		    				dir.mkdir();
+		                	for (Photo p: a.getPhotoSet()){
+		                		// copy the photos to the folder
+		                		File src = p.getFile();
+		                		File dst = new File(path + System.getProperty("file.separator") + src.getName());
+		                		FileInputStream fileInputStream = new FileInputStream(src);
+		                		FileOutputStream fileOutputStream = new FileOutputStream(dst);
+		                		int bufferSize;
+		                        byte[] bufffer = new byte[512];
+		                        while ((bufferSize = fileInputStream.read(bufffer)) > 0) {
+		                                fileOutputStream.write(bufffer, 0, bufferSize);
+		                        }
+		                        fileInputStream.close();
+		                        fileOutputStream.close();
+		                	}
+		            	}
+		            	System.out.println("Exported folders and files to " + root.getAbsolutePath());
+	            	} catch (IOException ex) {
+	            		System.out.println("Error while exporting folders");
+	            	}
 	            	break;
 	            case CANCEL_EXPORT:
-	            	System.out.println("Export anceled");
+	            	System.out.println("Export canceled");
 	            	break;
             	default:
 	            	System.out.println("Selection error!");
@@ -323,5 +359,18 @@ public class PhotoOrganizerController {
 	        }
 		}
 	}
+	
+    private boolean deleteFolder(File folder) {
+        if (folder.isDirectory()) {
+            String[] children = folder.list();
+            for (int i=0; i<children.length; i++) {
+                boolean success = deleteFolder(new File(folder, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return folder.delete();
+    }
 
 }
