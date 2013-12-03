@@ -47,6 +47,7 @@ public class PhotoOrganizerView extends JFrame {
 	private JButton newWindowButton;
 	private JButton undoButton;
 	private JButton redoButton;
+	private JButton exportButton;
 	private Timer enableButtonsTimer;
 
 	public PhotoOrganizerView() {
@@ -98,7 +99,7 @@ public class PhotoOrganizerView extends JFrame {
 	private JPanel makeButtonPanel() {
 		JPanel panel = new JPanel();
 
-		panel.setLayout(new GridLayout(2, 5));
+		panel.setLayout(new GridLayout(2, 6));
 
 		newAlbumButton = new JButton("New Album");
 		panel.add(newAlbumButton);
@@ -114,21 +115,24 @@ public class PhotoOrganizerView extends JFrame {
 
 		slideshowButton = new JButton("Slide Show");
 		panel.add(slideshowButton);
+
+		newWindowButton = new JButton("New Window");
+		panel.add(newWindowButton);
 		
 		flagPhotosButton = new JButton("Flag/Unflag");
 		panel.add(flagPhotosButton);
 
 		ratePhotosButton = new JButton("Rate Photos");
 		panel.add(ratePhotosButton);
-		
-		newWindowButton = new JButton("New Window");
-		panel.add(newWindowButton);
 
 		undoButton = new JButton("Undo");
 		panel.add(undoButton);
 
 		redoButton = new JButton("Redo");
 		panel.add(redoButton);
+
+		exportButton = new JButton("Export");
+		panel.add(exportButton);
 
 		return panel;
 	}
@@ -171,6 +175,10 @@ public class PhotoOrganizerView extends JFrame {
 
 	public void addRedoListener(ActionListener listener) {
 		redoButton.addActionListener(listener);
+	}
+
+	public void addExportListener(ActionListener listener) {
+		exportButton.addActionListener(listener);
 	}
 
 	/**
@@ -256,14 +264,21 @@ public class PhotoOrganizerView extends JFrame {
 				"Add Album", JOptionPane.PLAIN_MESSAGE, null, null, "");
 	}
 
-	/**
-	 * Pop up a dialog box prompting the user for a name for a new album.
-	 * Returns the name, or null if the user pressed Cancel.
-	 */
 	public int promptForPhotoRating() {
 		int rating = Integer.parseInt((String) JOptionPane.showInputDialog(
 				albumTree, "Rating: ", "Rate Photos",
 				JOptionPane.PLAIN_MESSAGE, null, null, ""));
 		return rating;
+	}
+
+	public int exportPrompt() {
+		String[] options = new String[] {
+				"Cancel",
+				"Folder structure", 
+				"HTML"
+				};
+		return JOptionPane.showOptionDialog(this, "Export as: ", "Export", 
+				JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, 
+				null, options, options[0]);
 	}
 }

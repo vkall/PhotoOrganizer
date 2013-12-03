@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EmptyStackException;
 
+import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -33,6 +34,7 @@ public class PhotoOrganizerController {
 		this.view.addNewWindowListener(new NewWindowListener());
 		this.view.addUndoListener(new UndoListener());
 		this.view.addRedoListener(new RedoListener());
+		this.view.addExportListener(new ExportListener());
 
 		this.view.getPreviewPane().display(this.model.getRoot().getPhotoSet());
 
@@ -268,6 +270,33 @@ public class PhotoOrganizerController {
 			System.out.println("Open new window");
 		}
 
+	}
+
+	private final int HTML_EXPORT = 2;
+	private final int FOLDER_EXPORT = 1;
+	private final int CANCEL_EXPORT = 0;
+	
+	private class ExportListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int choise = view.exportPrompt();
+
+	        switch (choise) {
+	            case HTML_EXPORT:
+	            	System.out.println("Export as HTML");
+	            	break;
+	            case FOLDER_EXPORT:
+	            	System.out.println("Export as folders and files");
+	            	break;
+	            case CANCEL_EXPORT:
+	            	System.out.println("Export anceled");
+	            	break;
+            	default:
+	            	System.out.println("Selection error!");
+            		break;
+	        }
+		}
 	}
 
 }
