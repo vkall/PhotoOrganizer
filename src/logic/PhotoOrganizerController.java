@@ -2,9 +2,10 @@ package logic;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.EmptyStackException;
 
-import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -280,11 +281,35 @@ public class PhotoOrganizerController {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			Iterator iterator = model.getRoot().createIterator();
+			
 			int choise = view.exportPrompt();
-
+			
 	        switch (choise) {
 	            case HTML_EXPORT:
 	            	System.out.println("Export as HTML");
+	            	String filename = "exported.html";
+	            	try {
+		            	PrintWriter writer = new PrintWriter(filename, "UTF-8");
+		            	writer.println("<html><head><title>PhotoOrganizer</title></head><body>");
+		            	while (iterator.hasNext()) {
+		    				Album a = (Album)iterator.next();
+		    				writer.println("<h2>" + a + "</h2>");
+		                	for (Photo p: a.getPhotoSet()){
+		                		String path = p.getFile().getAbsolutePath();
+		                		String name = p.getFile().getName();
+		                		writer.println("<p><img src=\"" + path + "\" alt=\"" + name 
+		                				+ "\" width=\"600px\"></p>");
+		                	}
+		                	writer.println("<br />");
+		    			}
+		            	writer.println("</body></html>");
+		            	System.out.println("Created html at " + System.getProperty("user.dir") 
+		            			+ System.getProperty("file.separator") + filename);
+		            	writer.close();
+	            	} catch (IOException ex) {
+	            		System.out.println("Error while creating HTML-file");
+	            	}
 	            	break;
 	            case FOLDER_EXPORT:
 	            	System.out.println("Export as folders and files");

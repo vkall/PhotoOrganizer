@@ -23,7 +23,7 @@ public class Album {
 		assert albumName != null && albumName != "";
 
 		name = albumName;
-
+		
 		// postcondition
 		assert invariant() && this.name == albumName;
 	}
@@ -123,6 +123,15 @@ public class Album {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	
+	public Iterator createIterator() {
+		Set<Album> albums = new HashSet<Album>();
+		albums.add(this);
+		albums.addAll(subalbums);
+		Iterator i = new AlbumIterator(albums.toArray(new Album[albums.size()]));
+		return i;
 	}
 
 	private boolean invariant() {
